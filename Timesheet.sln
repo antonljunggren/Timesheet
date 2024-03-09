@@ -11,12 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebApp", "src\WebApp\WebApp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "src\Application\Application.csproj", "{2BF975E7-ADCD-4907-8F4E-AA02246CACF2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "src\Domain\Domain.csproj", "{EF8D71E0-D3A2-4CEF-A759-0E99086FCACD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "src\Domain\Domain.csproj", "{EF8D71E0-D3A2-4CEF-A759-0E99086FCACD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{2DD0A8BE-C7AA-422B-8C8C-D9B6BE32EE01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "src\Infrastructure\Infrastructure.csproj", "{2DD0A8BE-C7AA-422B-8C8C-D9B6BE32EE01}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{842360F7-C65F-42ED-A0D3-2259FCFFD3C2}"
 	ProjectSection(SolutionItems) = preProject
+		.github\workflows\deploy-pipeline.yaml = .github\workflows\deploy-pipeline.yaml
 		README.md = README.md
 	EndProjectSection
 EndProject
