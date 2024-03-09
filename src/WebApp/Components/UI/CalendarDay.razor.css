@@ -1,0 +1,23 @@
+﻿.calendar-day {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+.time-worked-list {
+    padding: 0.5rem;
+}
+
+.day-number {
+    align-self: flex-start;
+    padding: 1rem;
+}
+
+.time-worked {
+    background-color: lightblue;
+}
+
+.time-worked:hover {
+    background-color: lightcyan;
+    cursor: pointer;
+}
