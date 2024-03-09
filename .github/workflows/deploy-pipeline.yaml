@@ -21,15 +21,15 @@ jobs:
           dotnet tool restore
           dotnet ef database update -c TimeSheetDbContext -p ./src/Infrastructure -s ./src/WebApp
         env:
-            ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
+            ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
       - name: Publish
         run: dotnet publish -c Release -o ./publish
         working-directory: ./src/WebApp
         env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
+          ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
       - name: Deploy
         run: |
           sudo cp -r ./publish/* ~/timesheet_app
         working-directory: ./src/WebApp
         env:
-          ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
+          ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
