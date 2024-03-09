@@ -20,6 +20,8 @@ jobs:
           dotnet tool install --global dotnet-ef
           dotnet tool restore
           dotnet ef database update -c TimeSheetDbContext -p ./src/Infrastructure -s ./src/WebApp
+        env:
+            ConnectionStrings__DefaultConnection: ${{ secrets.DB_CONNECTION_STRING }}
       - name: Publish
         run: dotnet publish -c Release -o ./publish
         working-directory: ./src/WebApp
