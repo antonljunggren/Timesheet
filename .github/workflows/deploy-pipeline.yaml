@@ -1,9 +1,7 @@
-name: Timesheet CI/CD Workflow
+name: Timesheet CD Workflow
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
     branches: [ main ]
 
 jobs:
@@ -15,6 +13,8 @@ jobs:
         uses: actions/setup-dotnet@v2
         with:
           dotnet-version: '8.0'
+      - name: Stop .NET Application
+        run: sudo systemctl stop timesheet.service
       - name: Install dotnet-ef tools
         run: |
           dotnet tool install --global dotnet-ef
@@ -29,7 +29,9 @@ jobs:
           ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
       - name: Deploy
         run: |
-          sudo cp -r ./publish/* ~/timesheet_app
+          sudo cp -r ./publish/* /var/www/timesheet_app
         working-directory: ./src/WebApp
         env:
           ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
+      - name: Start .NET Application
+        run: sudo systemctl start timesheet.service
