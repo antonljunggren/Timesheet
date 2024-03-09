@@ -19,7 +19,7 @@ jobs:
         run: |
           dotnet tool install --global dotnet-ef
           dotnet tool restore
-          dotnet ef database update -c TimeSheetDbContext -p ./src/WebApp -s ./src/Infrastructure
+          dotnet ef database update -c TimeSheetDbContext -p ./src/Infrastructure -s ./src/WebApp
       - name: Publish
         run: dotnet publish -c Release -o ./publish
         working-directory: ./src/WebApp
