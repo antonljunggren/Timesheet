@@ -1,0 +1,38 @@
+name: Timesheet CD Workflow
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Stop .NET Application
+        run: sudo systemctl stop timesheet.service
+
+      - name: Add .NET Core tools to PATH
+        run: echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
+      - name: Install dotnet-ef tools
+        run: dotnet ef database update -c TimeSheetDbContext -p ./src/Infrastructure -s ./src/WebApp
+        env:
+            ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
+
+      - name: Publish
+        run: dotnet publish -c Release -o ./publish
+        working-directory: ./src/WebApp
+        env:
+          ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
+
+      - name: Deploy
+        run: |
+          sudo cp -r ./publish/* /var/www/timesheet_app
+        working-directory: ./src/WebApp
+        env:
+          ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
+
+      - name: Start .NET Application
+        run: sudo systemctl start timesheet.service

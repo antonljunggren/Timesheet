@@ -1,0 +1,104 @@
+﻿@using Application.Dto
+
+<div class="modal @ModalShow" tabindex="-1" role="dialog" style="display: @(ModalDisplay); padding-top: 5%">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add/Edit time worked</h5>
+            </div>
+            <div class="modal-body">
+                <div>
+                    <p>Date: @SelectedDate</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="projectDropdown">Project:</label>
+                    <select id="projectDropdown" @onchange="OnProjectSelected">
+                        <option value="00000000-0000-0000-0000-000000000000">-- Select a Project --</option>
+                        @foreach (ProjectDto project in Projects)
+                        {
+                            @if ( project.Id.Equals(SelectedProjectId))
+                            {
+                                <option value="@project.Id" selected>@project.ProjectName</option>
+                            }
+                            else
+                            {
+                                <option value="@project.Id">@project.ProjectName</option>
+                            }
+                        }
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="hoursInput">Hours:</label>
+                    <input type="number" id="hoursInput" @bind="HoursWorked" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="notesTextarea">Notes:</label>
+                    <textarea class="form-control" id="notesTextarea" @bind="Notes"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer @(TimeWorkedId == Guid.Empty ? "" : "justify-content-between")">
+                @if(TimeWorkedId != Guid.Empty)
+                {
+                    <button type="button" class="btn btn-danger flex-start" @onclick="OnDelete">Delete</button>
+                }
+                <div>
+                    <button type="button" class="btn btn-primary" @onclick="OnSaveChanges">Save changes</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => Close()">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if(ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    private string ModalDisplay = "none";
+    private string ModalShow = "";
+    private bool ShowBackdrop = false;
+
+    [Parameter]
+    public List<ProjectDto> Projects { get; set; } = new();
+    [Parameter]
+    public EventCallback OnSaveChanges { get; set; }
+    [Parameter]
+    public EventCallback OnDelete { get; set; }
+
+    public Guid TimeWorkedId { get; set; }
+    public DateOnly SelectedDate { get; set; }
+    public Guid SelectedProjectId { get; set; }
+    public int HoursWorked { get; set; }
+    public string Notes { get; set; } = "";
+
+    public void Open()
+    {
+        ModalDisplay = "block";
+        ModalShow = "Show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ModalDisplay = "none";
+        ModalShow = "";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
+
+    private void OnProjectSelected(ChangeEventArgs e)
+    {
+        var selectedId = Guid.Parse(e.Value?.ToString() ?? "00000000-0000-0000-0000-000000000000");
+        if (!Projects.Any(p => p.Id == selectedId))
+        {
+            throw new Exception($"Project with Id: {e.Value?.ToString()} does not exist");
+        }
+        SelectedProjectId = selectedId;
+    }
+}

@@ -1,0 +1,62 @@
+﻿@using Application.Dto
+
+<div class="calendar-day">
+    <p class="day-number">@Date.Day</p>
+
+    <div class="time-worked-list">
+        @foreach (var timeWorked in TimeWorked)
+        {
+            <div class="time-worked border"
+                 @onclick="@(() => HandleTimeWorkedSelect(timeWorked))"
+                 @onclick:stopPropagation="true">
+                <div class="d-flex justify-content-center">
+                    <p class="h-6 m-1 fw-bold">@GetProject(timeWorked.ProjectId).ProjectName</p>
+                    <p class="m-1">@(timeWorked.Hours)h</p>
+
+                </div>
+                <p class="m-1 text-center">"@timeWorked.Notes"</p>
+
+            </div>
+        }
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public bool IsSelectedMonth { get; set; }
+
+    [Parameter]
+    public DateOnly Date { get; set; }
+
+    [Parameter]
+    public List<TimeWorkedDto> TimeWorked { get; set; } = new();
+
+    [Parameter]
+    public List<ProjectDto> Projects { get; set; } = new();
+
+    [Parameter]
+    public EventCallback<DateOnly> OnSelected { get; set; }
+
+    [Parameter]
+    public EventCallback<TimeWorkedDto> OnTimeWorkedSelected { get; set; }
+
+    private async Task HandleTimeWorkedSelect(TimeWorkedDto timeWorked)
+    {
+        if (IsSelectedMonth)
+            await OnTimeWorkedSelected.InvokeAsync(timeWorked);
+    }
+
+    private ProjectDto GetProject(Guid projectId)
+    {
+        var project = Projects.FirstOrDefault(p => p.Id.Equals(projectId));
+
+        if (project is  null)
+        {
+            throw new Exception($"Project {projectId} does not exist");
+        }
+
+        return project;
+    }
+
+}

@@ -1,0 +1,207 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@using System.Globalization
+@using Application.Dto
+@using Application.Services
+@using WebApp.Components.UI
+
+
+<PageTitle>Calendar</PageTitle>
+
+<div class="d-flex justify-content-start">
+    <div class="d-flex align-items-center mb-3">
+        <button class="btn btn-outline-primary" @onclick="GoToPreviousMonth">❮</button>
+        <span class="mx-3 currentDateText">@MonthName - @SelectedMonth.Year</span>
+        <button class="btn btn-outline-primary" @onclick="GoToNextMonth">❯</button>
+    </div>
+
+    <div class="mx-3">
+        <h4>Hours worked: @(HoursWorked)h</h4>
+    </div>
+</div>
+
+<TimeWorkedModal @ref="TimeWorkedModal" OnDelete="DeleteTimeWorked" OnSaveChanges="SaveTimeWorkedData" Projects="Projects" />
+
+<div class="calendar-header">
+    <div class="day-name">Monday</div>
+    <div class="day-name">Tuesday</div>
+    <div class="day-name">Wednesday</div>
+    <div class="day-name">Thursday</div>
+    <div class="day-name">Friday</div>
+    <div class="day-name">Saturday</div>
+    <div class="day-name">Sunday</div>
+</div>
+<div class="calendar">
+    
+
+    @for (int i = 0; i < CalendarDays.Count; i += 7)
+    {
+        @for (int j = 0; j < 7; j++)
+        {
+            var day = CalendarDays[i + j];
+
+            <div class="day @(day.Month == SelectedMonth.Month ? "current-month" : "other-month")"
+                 @onclick="() => {
+                    if(day.Month == SelectedMonth.Month)
+                    {
+                        CalendarDaySelected(day);
+                    }
+                 }">
+                <CalendarDay OnTimeWorkedSelected="TimeWorkedSelected"
+                                IsSelectedMonth="@(day.Month == SelectedMonth.Month)"
+                                Projects="@Projects"
+                                Date="@day"
+                                TimeWorked="@GetTimeWorkedForDate(day)" />
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Inject]
+    protected ProjectService ProjectService { get; set; } = default!;
+
+    [Inject]
+    protected TimeWorkedService TimeWorkedService { get; set; } = default!;
+
+    private DateOnly SelectedMonth = DateOnly.FromDateTime(DateTime.UtcNow);
+    private int HoursWorked => TimeWorked.Sum(t => t.Hours);
+    private string MonthName => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(SelectedMonth.Month);
+    private List<DateOnly> CalendarDays = new List<DateOnly>();
+
+    private TimeWorkedModal TimeWorkedModal = null!;
+
+    private List<ProjectDto> Projects = new List<ProjectDto>();
+
+    private List<TimeWorkedDto> TimeWorked = new List<TimeWorkedDto>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        CalculateCalendarPadding();
+
+        Projects = await ProjectService.GetAllProjects();
+
+        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonth(SelectedMonth.Month);
+    }
+
+    private List<TimeWorkedDto> GetTimeWorkedForDate(DateOnly date)
+    {
+        return TimeWorked.Where(t => t.Date.Equals(date)).ToList();
+    }
+
+    private void CalendarDaySelected(DateOnly date)
+    {
+        TimeWorkedModal.SelectedProjectId = Guid.Empty;
+        TimeWorkedModal.TimeWorkedId = Guid.Empty;
+        TimeWorkedModal.HoursWorked = 0;
+        TimeWorkedModal.Notes = "";
+        TimeWorkedModal.SelectedDate = date;
+        TimeWorkedModal.Open();
+    }
+
+    private void TimeWorkedSelected(TimeWorkedDto timeWorked)
+    {
+        TimeWorkedModal.SelectedProjectId = timeWorked.ProjectId;
+        TimeWorkedModal.TimeWorkedId = timeWorked.Id;
+        TimeWorkedModal.HoursWorked = timeWorked.Hours;
+        TimeWorkedModal.Notes = timeWorked.Notes;
+        TimeWorkedModal.SelectedDate = timeWorked.Date;
+        TimeWorkedModal.Open();
+    }
+
+    private void CalculateCalendarPadding()
+    {
+        CalendarDays.Clear();
+
+        DateTime firstDayOfMonth = new DateTime(SelectedMonth.Year, SelectedMonth.Month, 1);
+        DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+        DayOfWeek firstDayOfWeek = firstDayOfMonth.DayOfWeek;
+        DayOfWeek lastDayOfWeek = lastDayOfMonth.DayOfWeek;
+
+        int daysToPadStart = ((int)firstDayOfWeek + 6) % 7;
+        int daysToPadEnd = 6 - ((int)lastDayOfWeek + 6) % 7;
+
+        DateOnly startDate = DateOnly.FromDateTime(firstDayOfMonth).AddDays(-daysToPadStart);
+        DateOnly endDate = DateOnly.FromDateTime(lastDayOfMonth).AddDays(daysToPadEnd);
+
+        for (DateOnly date = startDate; date <= endDate; date = date.AddDays(1))
+        {
+            CalendarDays.Add(date);
+        }
+    }
+
+    private async Task GoToPreviousMonth()
+    {
+        SelectedMonth = SelectedMonth.AddMonths(-1);
+        CalculateCalendarPadding();
+        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonth(SelectedMonth.Month);
+    }
+
+    private async Task GoToNextMonth()
+    {
+        SelectedMonth = SelectedMonth.AddMonths(1);
+        CalculateCalendarPadding();
+        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonth(SelectedMonth.Month);
+    }
+
+    private async Task DeleteTimeWorked()
+    {
+        try
+        {
+            await TimeWorkedService.DeleteTimeWorked(TimeWorkedModal.TimeWorkedId);
+
+            var timeWorked = TimeWorked.FirstOrDefault(tw => tw.Id == TimeWorkedModal.TimeWorkedId);
+
+            if (timeWorked is not null)
+            {
+                TimeWorked.Remove(timeWorked);
+            }
+
+            TimeWorkedModal.Close();
+        }
+        catch (Exception)
+        {
+            //TODO: error message in corner
+        }
+    }
+
+    private async Task SaveTimeWorkedData()
+    {
+        if(TimeWorkedModal.SelectedProjectId == Guid.Empty)
+        {
+            return;
+        }
+
+        if(TimeWorkedModal.HoursWorked <= 0)
+        {
+            return;
+        }
+
+        var timeWorkedData = new TimeWorkedDto(
+            TimeWorkedModal.TimeWorkedId,
+            TimeWorkedModal.SelectedProjectId,
+            TimeWorkedModal.HoursWorked,
+            TimeWorkedModal.SelectedDate,
+            TimeWorkedModal.Notes
+        );
+
+        try
+        {
+            var newTimeWorked = await TimeWorkedService.SaveTimeWorked(timeWorkedData);
+            var oldTimeWorked = TimeWorked.FirstOrDefault(tw => tw.Id == newTimeWorked.Id);
+
+            if(oldTimeWorked is not null)
+            {
+                TimeWorked.Remove(oldTimeWorked);
+            }
+
+            TimeWorked.Add(newTimeWorked);
+
+            TimeWorkedModal.Close();
+        }
+        catch (Exception)
+        {
+            //TODO: error message in corner
+        }
+    }
+}
