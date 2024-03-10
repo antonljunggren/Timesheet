@@ -17,8 +17,6 @@ jobs:
         run: sudo systemctl stop timesheet.service
       - name: Install dotnet-ef tools
         run: |
-          dotnet tool install --global dotnet-ef
-          dotnet tool restore
           dotnet ef database update -c TimeSheetDbContext -p ./src/Infrastructure -s ./src/WebApp
         env:
             ConnectionStrings__TimeSheetDatabase: ${{ secrets.DB_CONNECTION_STRING }}
