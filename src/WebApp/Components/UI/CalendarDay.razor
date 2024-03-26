@@ -6,7 +6,7 @@
     <div class="time-worked-list">
         @foreach (var timeWorked in TimeWorked)
         {
-            <div class="time-worked border"
+            <div class="@(IsSelectedMonth ? "time-worked" : "other-month-time") border"
                  @onclick="@(() => HandleTimeWorkedSelect(timeWorked))"
                  @onclick:stopPropagation="true">
                 <div class="d-flex justify-content-center">
@@ -14,7 +14,10 @@
                     <p class="m-1">@(timeWorked.Hours)h</p>
 
                 </div>
-                <p class="m-1 text-center">"@timeWorked.Notes"</p>
+                @if (!string.IsNullOrWhiteSpace(timeWorked.Notes))
+                {
+                    <p class="m-1 text-center">"@timeWorked.Notes"</p>
+                }
 
             </div>
         }

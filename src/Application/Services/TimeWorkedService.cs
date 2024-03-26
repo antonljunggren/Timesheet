@@ -29,6 +29,15 @@ namespace Application.Services
 
             var timesWorked = await _timeWorkedRepository.FindAllByMonthAsync(monthNumber);
 
+            var previousMonth = await _timeWorkedRepository.FindAllByMonthAsync(monthNumber > 1 ? monthNumber - 1 : 12);
+            var nextMonth = await _timeWorkedRepository.FindAllByMonthAsync(monthNumber < 12 ? monthNumber + 1 : 1);
+
+            previousMonth = previousMonth.Where(tw => tw.Date.Day >= 31-7).ToList();
+            nextMonth = nextMonth.Where(tw => tw.Date.Day <= 7).ToList();
+
+            timesWorked.AddRange(previousMonth);
+            timesWorked.AddRange(nextMonth);
+
             return timesWorked.Select(tw => TimeWorkedDto.FromModel(tw)).ToList();
         }
 
