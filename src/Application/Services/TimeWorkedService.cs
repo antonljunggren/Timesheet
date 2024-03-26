@@ -41,7 +41,7 @@ namespace Application.Services
                 var newTimeWorked = timeWorked with { Id = Guid.NewGuid() };
                 
 
-                var timeWorkedModel = new TimeWorked(newTimeWorked.Id, newTimeWorked.Date, project, newTimeWorked.Hours, newTimeWorked.Notes);
+                var timeWorkedModel = new TimeWorked(newTimeWorked.Id, newTimeWorked.Date, project.Id, newTimeWorked.Hours, newTimeWorked.Notes);
 
                 await _timeWorkedRepository.AddAsync(timeWorkedModel);
 
@@ -49,7 +49,7 @@ namespace Application.Services
             }
             else
             {
-                var timeWorkedModel = new TimeWorked(timeWorked.Id, timeWorked.Date, project, timeWorked.Hours, timeWorked.Notes);
+                var timeWorkedModel = new TimeWorked(timeWorked.Id, timeWorked.Date, project.Id, timeWorked.Hours, timeWorked.Notes);
 
                 await _timeWorkedRepository.UpdateAsync(timeWorkedModel);
                 return timeWorked;

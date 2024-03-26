@@ -17,7 +17,7 @@ namespace Infrastructure.Entites
 
         public TimeWorkedEntity UpdateFromDomain(TimeWorked timeWorked)
         {
-            ProjectId = timeWorked.Project.Id;
+            ProjectId = timeWorked.ProjectId;
             Hours = Convert.ToByte(timeWorked.Hours);
             Notes = timeWorked.Notes;
 

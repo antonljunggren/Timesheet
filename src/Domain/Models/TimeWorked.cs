@@ -9,23 +9,18 @@ namespace Domain.Models
     public sealed class TimeWorked
     {
         public Guid Id { get; private set; }
+        public Guid ProjectId { get; private set; }
         public DateOnly Date { get; private set; }
-        public Project Project { get; private set; } = default!;
         public int Hours { get; private set; }
         public string Notes { get; private set; } = default!;
 
-        public TimeWorked(Guid id, DateOnly date, Project project, int hours, string notes)
+        public TimeWorked(Guid id, DateOnly date, Guid projectId, int hours, string notes)
         {
             Id = id;
             Date = date;
-            ChangeProject(project);
+            ProjectId = projectId;
             ChangeHours(hours);
             ChangeNotes(notes);
-        }
-
-        public void ChangeProject(Project project)
-        {
-            Project = project;
         }
 
         public void ChangeHours(int newHours)

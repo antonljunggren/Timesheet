@@ -13,7 +13,7 @@ namespace Application.Dto
         {
             var dto = new TimeWorkedDto(
                 timeWorked.Id,
-                timeWorked.Project.Id,
+                timeWorked.ProjectId,
                 timeWorked.Hours,
                 timeWorked.Date,
                 timeWorked.Notes
