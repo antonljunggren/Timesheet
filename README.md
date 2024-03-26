@@ -19,7 +19,6 @@ The core premise is each calendar day has zero or many "TimeWorked" and each Ite
 
 ### Future
 
-Except for just using it myself, the idea is to grow the project step by step and turn it into a
-multi tenant service.
+The idea is just to use it myself and grow the project as needed.
 And along the way document each step.
-But that remains to be seen.
+But that remains to be seen...

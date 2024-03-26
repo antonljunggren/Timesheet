@@ -11,6 +11,11 @@
 .day-number {
     align-self: flex-start;
     padding: 1rem;
+    margin: 0;
+}
+
+.other-month-time {
+    background-color: lightsteelblue;
 }
 
 .time-worked {

@@ -25,7 +25,7 @@ namespace Infrastructure.Repositories
             var entity = new TimeWorkedEntity()
             {
                 Id = timeWorked.Id,
-                ProjectId = timeWorked.Project.Id,
+                ProjectId = timeWorked.ProjectId,
                 Date = timeWorked.Date,
                 Hours = Convert.ToByte(timeWorked.Hours),
                 Notes = timeWorked.Notes,
@@ -83,7 +83,7 @@ namespace Infrastructure.Repositories
                 .Where(tw => tw.Date.Month == month)
                 .Include(tw => tw.Project)
                 .AsNoTracking()
-                .Select(tw => new TimeWorked(tw.Id, tw.Date, new Project(tw.ProjectId, tw.Project!.Name), tw.Hours, tw.Notes))
+                .Select(tw => new TimeWorked(tw.Id, tw.Date,tw.ProjectId, tw.Hours, tw.Notes))
                 .ToListAsync();
 
             return result;
@@ -100,7 +100,7 @@ namespace Infrastructure.Repositories
                 throw new NullReferenceException($"TimeWorked with id: {id} does not exist in the database");
             }
 
-            return new TimeWorked(entity.Id, entity.Date, new Project(entity.ProjectId, entity.Project!.Name), entity.Hours, entity.Notes);
+            return new TimeWorked(entity.Id, entity.Date, entity.ProjectId, entity.Hours, entity.Notes);
         }
     }
 }

@@ -65,7 +65,7 @@
     protected TimeWorkedService TimeWorkedService { get; set; } = default!;
 
     private DateOnly SelectedMonth = DateOnly.FromDateTime(DateTime.UtcNow);
-    private int HoursWorked => TimeWorked.Sum(t => t.Hours);
+    private int HoursWorked => TimeWorked.Where(tw => tw.Date.Month == SelectedMonth.Month).Sum(t => t.Hours);
     private string MonthName => CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(SelectedMonth.Month);
     private List<DateOnly> CalendarDays = new List<DateOnly>();
 
