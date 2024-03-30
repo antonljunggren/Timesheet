@@ -81,7 +81,7 @@
 
         Projects = await ProjectService.GetAllProjects();
 
-        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonth(SelectedMonth.Month);
+        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonthWithPrevNextMonth(SelectedMonth.Month);
     }
 
     private List<TimeWorkedDto> GetTimeWorkedForDate(DateOnly date)
@@ -134,14 +134,14 @@
     {
         SelectedMonth = SelectedMonth.AddMonths(-1);
         CalculateCalendarPadding();
-        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonth(SelectedMonth.Month);
+        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonthWithPrevNextMonth(SelectedMonth.Month);
     }
 
     private async Task GoToNextMonth()
     {
         SelectedMonth = SelectedMonth.AddMonths(1);
         CalculateCalendarPadding();
-        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonth(SelectedMonth.Month);
+        TimeWorked = await TimeWorkedService.GetTimeWorkedByMonthWithPrevNextMonth(SelectedMonth.Month);
     }
 
     private async Task DeleteTimeWorked()

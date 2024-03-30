@@ -11,5 +11,7 @@ namespace Application.Repositories
     {
         Task<Project> FindByIdAsync(Guid id);
         Task<List<Project>> GetAllAsync();
+        Task<Project> CreateProject(string projectName);
+        Task DeleteProject(Guid id);
     }
 }
