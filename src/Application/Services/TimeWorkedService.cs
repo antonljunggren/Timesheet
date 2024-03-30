@@ -20,7 +20,7 @@ namespace Application.Services
             _projectRepository = projectRepository;
         }
 
-        public async Task<List<TimeWorkedDto>> GetTimeWorkedByMonth(int monthNumber)
+        public async Task<List<TimeWorkedDto>> GetTimeWorkedByMonthWithPrevNextMonth(int monthNumber)
         {
             if(monthNumber < 0 || monthNumber > 12)
             {

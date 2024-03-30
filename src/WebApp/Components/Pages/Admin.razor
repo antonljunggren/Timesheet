@@ -1,0 +1,65 @@
+﻿@page "/admin"
+@rendermode InteractiveServer
+@using Application.Dto
+@using Application.Services
+
+<h3>Admin</h3>
+
+<div>
+    <div class="w-25">
+        @foreach(var project in Projects)
+        {
+            <div class="mb-3 w-75 d-flex justify-content-between align-items-center">
+                <p class="mb-0">@project.ProjectName</p>
+                <button class="btn btn-danger" @onclick="() => DeleteProject(project)">Delete project</button>
+            </div>
+        }
+    </div>
+    <div class="input-group mb-3 w-25">
+        <input class="form-control" type="text" placeholder="project name" @bind-value="NewProjectName" />
+        <button class="btn btn-success" @onclick="CreateProject">Create project</button>
+    </div>
+</div>
+
+@code {
+    [Inject]
+    protected ProjectService ProjectService { get; set; } = default!;
+
+    private List<ProjectDto> Projects = new List<ProjectDto>();
+
+    private string NewProjectName { get; set; } = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        Projects = await ProjectService.GetAllProjects();
+    }
+
+    private async Task CreateProject()
+    {
+        try
+        {
+            ProjectDto newProject = await ProjectService.CreateProject(NewProjectName);
+
+            Projects.Add(newProject);
+
+            NewProjectName = default!;
+        }
+        catch (Exception)
+        {
+            //TODO: error handling
+        }
+    }
+
+    private async Task DeleteProject(ProjectDto project)
+    {
+        try
+        {
+            await ProjectService.DeleteProject(project);
+            Projects.Remove(project);
+        }
+        catch (Exception)
+        {
+            //TODO: error handling
+        }
+    }
+}

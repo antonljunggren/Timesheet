@@ -23,5 +23,16 @@ namespace Application.Services
             var projects = await _repository.GetAllAsync();
             return projects.Select(p => ProjectDto.FromDomain(p)).ToList();
         }
+
+        public async Task<ProjectDto> CreateProject(string projectName)
+        {
+            var project = await _repository.CreateProject(projectName);
+            return ProjectDto.FromDomain(project);
+        }
+
+        public async Task DeleteProject(ProjectDto project)
+        {
+            await _repository.DeleteProject(project.Id);
+        }
     }
 }

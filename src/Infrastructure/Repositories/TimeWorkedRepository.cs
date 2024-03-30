@@ -82,6 +82,7 @@ namespace Infrastructure.Repositories
             var result = await _dbContext.TimeWorked
                 .Where(tw => tw.Date.Month == month)
                 .Include(tw => tw.Project)
+                .Where(tw => tw.Project != null && tw.Project.IsActive)
                 .AsNoTracking()
                 .Select(tw => new TimeWorked(tw.Id, tw.Date,tw.ProjectId, tw.Hours, tw.Notes))
                 .ToListAsync();
@@ -93,6 +94,7 @@ namespace Infrastructure.Repositories
         {
             var entity = await _dbContext.TimeWorked
                 .Include(tw => tw.Project)
+                .Where(tw => tw.Project != null && tw.Project.IsActive)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(tw => tw.Id == id);
             if(entity is null)
