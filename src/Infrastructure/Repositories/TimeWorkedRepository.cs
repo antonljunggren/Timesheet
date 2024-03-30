@@ -34,8 +34,9 @@ namespace Infrastructure.Repositories
                 DateModified = DateTime.Now,
             };
 
-            await _dbContext.TimeWorked.AddAsync(entity);
+            _dbContext.TimeWorked.Add(entity);
             var rows = await _dbContext.SaveChangesAsync();
+            _dbContext.Entry(entity).State = EntityState.Detached;
             if(rows <= 0)
             {
                 throw new Exception("TimeWorked was not added to database");

@@ -17,7 +17,7 @@ namespace Infrastructure
 #if DEBUG
                 opt.EnableSensitiveDataLogging();
 #endif
-            });
+            }, ServiceLifetime.Scoped);
 
             return services;
         }

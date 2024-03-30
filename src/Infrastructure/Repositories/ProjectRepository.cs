@@ -24,15 +24,15 @@ namespace Infrastructure.Repositories
         {
             var project = new ProjectEntity()
             {
-                Id = Guid.NewGuid(),
                 Name = projectName,
                 IsActive = true,
                 DateCreated = DateTime.Now,
                 DateModified = DateTime.Now,
             };
 
-            var createdProject = await _dbContext.Projects.AddAsync(project);
+            _dbContext.Projects.Add(project);
             var rows = await _dbContext.SaveChangesAsync();
+            _dbContext.Entry(project).State = EntityState.Detached;
 
             if (rows <= 0)
             {
